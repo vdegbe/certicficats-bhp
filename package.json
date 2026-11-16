@@ -1,0 +1,11 @@
+{
+  "name": "certificats-bhp",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "build": "node build/build.mjs",
+    "assets": "node build/assets.mjs"
+  },
+  "engines": { "node": ">=20" }
+}
