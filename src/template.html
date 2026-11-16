@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+<meta name="robots" content="noindex,nofollow">
+<title>Certificats de Non-Infestation</title>
+<style>
+/*@CSS@*/
+</style>
+</head>
+<body>
+<datalist id="names"></datalist>
+<main>
+<h1>Certificat de Non-Infestation</h1>
+<div class="tabs"><button id="t1" class="on">Nouveau</button><button id="t4">Import</button><button id="t2">Historique</button><button id="t3">Réglages</button></div>
+
+<section id="p1">
+ <div class="card">
+  <div class="grid">
+   <div class="full"><label>N° de module (10 chiffres, ex. 1129040088)</label><input id="num" inputmode="numeric" maxlength="10" autocomplete="off"><div class="det" id="det"></div></div>
+   <div class="full"><label>Site proposé (touchez pour choisir)</label><div class="chips" id="chips"></div></div>
+   <div><label>Date de l’audit</label><input id="dAudit" type="date"></div>
+   <div><label>Date de signature (auto)</label><input id="dSign" disabled></div>
+   <div class="full"><label>Site (nom)</label><input id="siteNom"></div>
+   <div><label>Étage</label><input id="etage" placeholder="4"></div>
+   <div><label>Porte</label><input id="porte" placeholder="2"></div>
+   <div class="full"><label>Adresse</label><input id="adresse"></div>
+   <div><label>Code postal</label><input id="cp" inputmode="numeric" maxlength="5"></div>
+   <div><label>Ville</label><input id="ville"></div>
+   <div class="full"><label>Établi par (prénom, pour l’historique)</label><input id="by" list="names" autocomplete="off"></div>
+  </div>
+  <div class="ref" id="ref">—</div>
+  <button class="pri" id="gen" style="width:100%">Générer le PDF</button>
+  <div class="msg" id="msg"></div>
+ </div>
+</section>
+
+<section id="p4" class="hide">
+ <div class="card">
+  <label>Export twimm des interventions (fichier .csv)</label>
+  <input id="csvf" type="file" accept=".csv,text/csv,text/plain">
+  <div class="msg" id="imsg">Les certificats sont préparés automatiquement ; les logements douteux sont signalés avant toute génération.</div>
+ </div>
+ <div id="ires" class="hide">
+  <div class="card">
+   <div id="isum" class="msg"></div>
+   <div class="grid" style="margin-top:8px">
+    <div><label>Rechercher (n° twimm, n° de module, adresse…)</label><input id="iq" placeholder="ex. 101688 ou 5311110002"></div>
+    <div><label>Afficher</label><select id="ifl" style="width:100%"><option value="all">Tous</option><option value="ready">Prêts</option><option value="check">À vérifier</option><option value="done">Déjà générés</option></select></div>
+    <div class="full"><label>Établi par (prénom, pour l’historique)</label><input id="iby" list="names" autocomplete="off"></div>
+   </div>
+   <div class="tools"><button id="iall">Cocher les prêts</button><button id="inone">Tout décocher</button></div>
+   <button class="pri" id="igen" style="width:100%" disabled>Générer (rien de coché)</button>
+   <div id="ilist"></div>
+  </div>
+  <div class="card hide" id="iout">
+   <b>Certificats générés</b>
+   <label style="margin-top:8px;font-size:13px;color:var(--tx)"><input type="checkbox" id="izd"> ZIP : un dossier par n° twimm (les noms de fichiers restent identiques)</label>
+   <div class="tools"><button class="pri" id="izip">Télécharger tout (ZIP)</button><button id="iidx">Index twimm ↔ fichiers (CSV)</button></div>
+   <div id="iolist"></div>
+  </div>
+ </div>
+</section>
+
+<section id="p2" class="hide"><div class="card">
+ <input id="q" placeholder="Rechercher (référence, n° twimm, site, adresse…)" style="margin-bottom:8px">
+ <div class="msg" id="hmsg"></div><div id="hist"></div></div></section>
+
+<section id="p3" class="hide"><div class="card">
+ <label>Adresse du service d’historique partagé (Google Apps Script)</label>
+ <input id="bk" placeholder="https://script.google.com/macros/s/…/exec">
+ <div style="display:flex;gap:8px;margin-top:8px"><button id="bkSave">Enregistrer et tester</button><button id="cpS">Copier le script</button></div>
+ <div class="msg" id="bmsg"></div>
+ <label style="margin-top:10px">Script à coller dans Google Apps Script</label><pre id="scr"></pre>
+</div></section>
+</main>
+
+<script>/*@JSPDF@*/</script>
+<script>/*@DATA@*/</script>
+<script>
+/*@APP@*/
+</script>
+</body>
+</html>

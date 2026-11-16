@@ -1,0 +1,39 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>Accès protégé</title>
+<style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;font:16px -apple-system,Segoe UI,Arial,sans-serif;background:#f6f4f4;color:#1d1d1f}
+@media(prefers-color-scheme:dark){body{background:#161617;color:#f2f2f3}input{background:#222224!important;color:#f2f2f3!important}}
+form{width:min(320px,90vw);text-align:center}h1{font-size:18px;color:#d41c1c}
+input,button{width:100%;font:inherit;padding:12px;margin-top:10px;border-radius:10px;border:1px solid #ccc;box-sizing:border-box}
+button{background:#d41c1c;color:#fff;border-color:#d41c1c}#e{color:#d41c1c;font-size:14px;min-height:20px;margin-top:8px}</style></head>
+<body><form id="f"><h1>Certificats de Non-Infestation</h1>
+<input id="p" type="password" placeholder="Mot de passe" autocomplete="current-password" autofocus>
+<button>Entrer</button><div id="e"></div></form>
+<script>
+const E=/*@E@*/,P=/*@P@*/,N=600000;
+const d=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function show(raw){
+  const ck=await crypto.subtle.importKey("raw",raw,"AES-GCM",false,["decrypt"]);
+  const buf=await crypto.subtle.decrypt({name:"AES-GCM",iv:d(P.i)},ck,d(P.c));
+  const html=new TextDecoder().decode(buf);
+  document.open();document.write(html);document.close();
+}
+async function open_(pw){
+  const k0=await crypto.subtle.importKey("raw",new TextEncoder().encode(pw),"PBKDF2",false,["deriveKey"]);
+  for(const e of E){let raw;
+    try{
+      const k=await crypto.subtle.deriveKey({name:"PBKDF2",salt:d(e.s),iterations:N,hash:"SHA-256"},k0,{name:"AES-GCM",length:256},false,["decrypt"]);
+      raw=new Uint8Array(await crypto.subtle.decrypt({name:"AES-GCM",iv:d(e.i)},k,d(e.w)));
+    }catch(x){continue}
+    try{sessionStorage.setItem("ck",btoa(String.fromCharCode(...raw)))}catch(x){}
+    return show(raw);
+  }
+  throw new Error("mot de passe");
+}
+async function go(pw){
+  const e=document.getElementById("e");e.textContent="Vérification…";
+  try{await open_(pw)}catch(x){e.textContent="Mot de passe incorrect."}
+}
+document.getElementById("f").onsubmit=ev=>{ev.preventDefault();go(document.getElementById("p").value.trim().toLowerCase())};
+try{sessionStorage.removeItem("k");const k=sessionStorage.getItem("ck");if(k)show(d(k)).catch(()=>sessionStorage.removeItem("ck"))}catch(x){}
+</script></body></html>
