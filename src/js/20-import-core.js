@@ -212,4 +212,4 @@ function analyseAll(rows,hist){
       cands.push(c)})});
   return cands}
 
-return{decode,parseCSV,analyse,analyseAll,bilanVerdict}})();
+return{decode,parseCSV,analyse,analyseAll,bilanVerdict,findAddress,findEtagePorte}})();

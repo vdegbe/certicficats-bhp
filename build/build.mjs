@@ -22,6 +22,8 @@ const place=(t,k,v)=>t.replace(`/*@${k}@*/`,()=>v);
 let page=rd("src/template.html");
 page=place(page,"CSS",rd("src/style.css"));
 page=place(page,"JSPDF",safe(rd("vendor/jspdf.umd.min.js")));
+page=place(page,"LEAFLET",safe(rd("vendor/leaflet.js")));
+page=place(page,"LEAFLETCSS",rd("vendor/leaflet.css"));
 page=place(page,"DATA",safe(data));
 page=place(page,"APP",safe(app));
 if(/\/\*@\w+@\*\//.test(page)){console.error("Marqueur non remplacé dans le gabarit.");process.exit(1)}

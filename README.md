@@ -43,3 +43,13 @@ Le jeton de l'historique est **distinct** du mot de passe du site et est inclus 
 
 Onglet **Import** : chargez l'export twimm (`.csv`). Chaque logement est classé *Prêt*, *À vérifier* ou *Déjà généré*, avec le motif.
 Rien n'est ignoré silencieusement : les cas douteux (plusieurs logements, bilan avec infestation ou « déjà fait », numéro de module mal saisi, adresse ou étage incohérents) restent visibles et modifiables.
+
+## Onglet « Carte » (tournées des techniciens)
+
+- Entrée : export twimm (adresse du logement lue dans l'« Objet », étage/porte reconnus) ou adresses collées à la main.
+- Le domicile du technicien est le départ et le retour. Il est mémorisé dans le navigateur uniquement (jamais dans l'historique partagé ni sur la fiche).
+- Géocodage : Base Adresse Nationale (api-adresse.data.gouv.fr, gratuit, sans clé). Fond de carte : OpenStreetMap, via Leaflet (`vendor/leaflet.*`).
+- Ordre des visites : plus proche voisin puis 2-opt (`src/js/32-map-core.js`, testé dans `test/map.test.mjs`). Distances par la route estimées à vol d'oiseau × 1,3.
+- Liens « Y aller » (Google Maps, Waze) et tournée complète par parties de 9 étapes. Fiche imprimable (impression du navigateur → PDF).
+- Les téléphones des locataires ne sont jamais repris dans la fiche ; la ligne « Contraintes » (contact gardien) l'est.
+- Les tuiles OpenStreetMap conviennent à un usage interne léger ; au-delà, prévoir un fournisseur de tuiles dédié.
