@@ -39,6 +39,17 @@ SITE_PASSWORDS="mdp1" npm run build
 
 Le jeton de l'historique est **distinct** du mot de passe du site et est inclus dans le script Google généré par l'application.
 
+## Sauvegarde de l'historique
+
+Onglet **Réglages** → *Exporter l'historique (CSV)* : fichier lisible dans Excel, dont la dernière colonne (`donnees`) permet une restauration sans perte.
+*Restaurer depuis un fichier de sauvegarde* ajoute les certificats absents de l'historique (ceux qui y sont déjà sont ignorés ; une ligne retouchée à la main est reconstruite depuis les colonnes lisibles).
+L'application rappelle de sauvegarder au bout de 30 jours. À faire chaque mois, et à garder dans un dossier de l'entreprise.
+
+## Si twimm change son export
+
+À l'import, les colonnes sont contrôlées : une colonne indispensable absente (N° twimm, Objet) bloque l'import avec la liste des colonnes lues ; une colonne utile absente est signalée avec sa conséquence ; et si presque tous les logements sont « à vérifier » pour le même motif, un avertissement indique que le format a sans doute changé.
+Pour adapter la lecture : ajouter un export récent **anonymisé** dans `test/`, corriger `src/js/20-import-core.js`, lancer `npm test`.
+
 ## Import twimm
 
 Onglet **Import** : chargez l'export twimm (`.csv`). Chaque logement est classé *Prêt*, *À vérifier* ou *Déjà généré*, avec le motif.

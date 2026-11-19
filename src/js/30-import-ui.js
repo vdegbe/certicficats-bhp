@@ -84,10 +84,12 @@ $("csvf").onchange=async ev=>{
   const f=ev.target.files[0];if(!f)return;imsg("Lecture du fichier…");
   try{
     const rows=IMP.parseCSV(IMP.decode(await f.arrayBuffer()));
-    if(!rows.length||!("ntwimm" in rows[0])||!("objet" in rows[0]))throw new Error("ce fichier ne ressemble pas à un export twimm (colonnes « N° twimm » et « Objet » introuvables).");
+    const cc=BAK.checkColumns(rows);
+    if(!rows.length||cc.blocking.length)throw new Error(rows.length?`ce fichier ne ressemble pas à un export twimm : colonne(s) introuvable(s) : ${cc.blocking.map(m=>"« "+m.label+" »").join(", ")}. Colonnes lues : ${cc.keys.slice(0,12).join(", ")||"aucune"}.`:"le fichier est vide.");
     await load();
     IM.cands=IMP.analyseAll(rows,hist);IM.out=[];$("iout").classList.add("hide");
-    $("ires").classList.remove("hide");imsg(`${f.name} : ${rows.length} ligne(s) lue(s).`,"ok");irender()}
+    const warn=cc.partial.map(m=>`colonne « ${m.label} » absente : ${m.effect}`),sus=BAK.suspicion(IM.cands);if(sus)warn.push(sus);
+    $("ires").classList.remove("hide");imsg(`${f.name} : ${rows.length} ligne(s) lue(s).`+(warn.length?" ⚠ "+warn.join(" ⚠ "):""),warn.length?"err":"ok");irender()}
   catch(e){imsg("Erreur : "+e.message,"err")}};
 $("iq").oninput=irender;$("ifl").onchange=irender;
 $("iby").value=ls.g("by")||"";
