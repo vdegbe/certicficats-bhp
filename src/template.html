@@ -69,6 +69,14 @@
  <div class="msg" id="hmsg"></div><div id="hist"></div></div></section>
 
 <section id="p3" class="hide"><div class="card">
+ <b>Sauvegarde de l’historique</b>
+ <div class="msg" id="bkInfo"></div>
+ <div class="tools"><button class="pri" id="bkExp">Exporter l’historique (CSV)</button></div>
+ <label style="margin-top:10px">Restaurer depuis un fichier de sauvegarde</label>
+ <input id="bkf" type="file" accept=".csv,text/csv,text/plain">
+ <div class="msg" id="bkRmsg"></div>
+</div>
+<div class="card">
  <label>Adresse du service d’historique partagé (Google Apps Script)</label>
  <input id="bk" placeholder="https://script.google.com/macros/s/…/exec">
  <div style="display:flex;gap:8px;margin-top:8px"><button id="bkSave">Enregistrer et tester</button><button id="cpS">Copier le script</button></div>

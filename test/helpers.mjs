@@ -13,6 +13,8 @@ export const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")
 export const refOf=d=>`CNI_MVH_${d.num}_${(d.dAudit||"").replace(/-/g,"")}`;
 const src=fs.readFileSync(path.join(root,"src/js/20-import-core.js"),"utf8");
 export const IMP=new Function("SITES","U","iso","refOf",src+";return IMP;")(SITES,U,iso,refOf);
+const bsrc=fs.readFileSync(path.join(root,"src/js/25-backup.js"),"utf8");
+export const BAK=new Function("IMP","U",bsrc+";return BAK;")(IMP,U);
 
 const HEAD=["N° twimm","Type","Code Site","Nom Site","Adresse Site","CP Site","Ville","Code zone","Localisation du BI","Objet","Bilan","Statut","Passages réalisés","Début passages réalisés","Fin passages réalisés"];
 const cell=v=>'"'+String(v??"").replace(/"/g,'""')+'"';
