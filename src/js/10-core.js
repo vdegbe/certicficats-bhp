@@ -10,7 +10,7 @@ const form=()=>{const d={};F.forEach(f=>d[f]=$(f).value.trim());d.siteCode=d.num
 
 // ---------- détection du site ----------
 function learned(code){const seen=new Set(),out=[];
-  hist.slice().sort((a,b)=>(b.at||"").localeCompare(a.at||"")).forEach(h=>{const d=h.d;if(d.siteCode!==code)return;
+  SUI.real(hist).sort((a,b)=>(b.at||"").localeCompare(a.at||"")).forEach(h=>{const d=h.d;if(d.siteCode!==code)return;
     const k=[d.siteNom,d.adresse,d.cp,d.ville].map(U).join("|");if(seen.has(k))return;seen.add(k);
     out.push({nom:U(d.siteNom),adr:U(d.adresse),cp:d.cp,ville:U(d.ville),used:1})});return out}
 function detect(){
@@ -87,19 +87,35 @@ async function load_(){
   try{for(const r of pend.slice()){await post(r);pend.splice(pend.indexOf(r),1)}ls.s("pend",pend);
     const j=await (await fetch(bkUrl())).json();if(j.error)throw new Error("accès refusé");
     hist=j.map(x=>{try{return{ref:x.ref,at:x.at,by:x.by,d:JSON.parse(x.data)}}catch(e){return null}}).filter(Boolean);
-    ls.s("hist",hist.slice(-500));$("hmsg").textContent=`Historique partagé · ${hist.length} certificat(s)`}
+    ls.s("hist",hist.slice(-500));$("hmsg").textContent=`Historique partagé · ${SUI.active(hist).length} certificat(s) en vigueur`}
   catch(e){hist=(ls.g("hist")||[]).concat(pend);$("hmsg").textContent="Service partagé injoignable : historique local affiché."}}
 async function add(r){hist.push(r);const l=(ls.g("hist")||[]);l.push(r);ls.s("hist",l.slice(-500));
   if(!BK)return"local";try{await post(r);return"shared"}catch(e){const p=ls.g("pend")||[];p.push(r);ls.s("pend",p);return"pending"}}
-function renderHist(){const box=$("hist"),q=U($("q").value);box.innerHTML="";
-  const rows=hist.slice().sort((a,b)=>(b.at||"").localeCompare(a.at||"")).filter(h=>!q||U(h.ref+" "+(h.d.twimm||"")+" "+h.d.siteNom+" "+h.d.adresse+" "+(h.by||"")).includes(q)).slice(0,300);
+const REP={key:""}; // certificat en cours de remplacement (choisi dans l'historique)
+function repBanner(){const b=$("repb");if(!REP.key){b.classList.add("hide");return}b.classList.remove("hide");$("rept").textContent=`Vous remplacez le certificat ${REP.key}. Corrigez les champs puis générez : l’ancien sera noté « remplacé » dans l’historique.`}
+function reopen(h){F.forEach(f=>$(f).value=h.d[f]||"");curCode=h.d.siteCode;detect();tab(1)}
+async function annuler(h){
+  const m=prompt(`Annuler le certificat ${h.ref} ?\nIl restera visible dans l’historique, marqué « annulé ». Indiquez le motif (obligatoire) :`);
+  if(m===null)return;if(!m.trim()){alert("Le motif est obligatoire : annulation non faite.");return}
+  const st=await add(SUI.annulRec(h,ls.g("by")||"",m.trim(),new Date().toISOString()));
+  $("hmsg").textContent=st==="pending"?"Annulation enregistrée sur cet appareil ; service partagé injoignable, elle sera renvoyée plus tard.":"Certificat annulé.";
+  renderHist();todoBadge()}
+function renderHist(){const box=$("hist"),q=U($("q").value),all=$("hf").value==="all",st=SUI.status(hist);box.innerHTML="";
+  const rows=SUI.real(hist).sort((a,b)=>(b.at||"").localeCompare(a.at||"")).filter(h=>(all||!st.has(h.ref))&&(!q||U(h.ref+" "+(h.d.twimm||"")+" "+h.d.siteNom+" "+h.d.adresse+" "+(h.by||"")).includes(q))).slice(0,300);
   if(!rows.length){box.textContent="Aucun certificat.";return}
-  rows.forEach(h=>{const div=document.createElement("div");div.className="hist";const l=document.createElement("div");
+  rows.forEach(h=>{const s=st.get(h.ref),div=document.createElement("div");div.className="hist"+(s?" off":"");const l=document.createElement("div");
     const b=document.createElement("b");b.textContent=`${U(h.d.adresse)} — ${h.d.etage?"ÉT. "+h.d.etage:""}${h.d.porte?" P. "+h.d.porte:""}`;
-    const s=document.createElement("small");s.textContent=`${h.ref}${h.d.twimm?" · twimm "+h.d.twimm:""} · ${h.at?new Date(h.at).toLocaleString("fr-FR"):""}${h.by?" · "+h.by:""}`;l.append(b,s);
-    const b1=document.createElement("button");b1.textContent="Rouvrir";b1.onclick=()=>{F.forEach(f=>$(f).value=h.d[f]||"");curCode=h.d.siteCode;detect();tab(1)};
-    const b2=document.createElement("button");b2.textContent="PDF";b2.onclick=async()=>{b2.disabled=true;try{save(h.ref+".pdf",await makePdf(h.d))}catch(e){alert("Erreur PDF : "+e.message)}b2.disabled=false};
-    div.append(l,b1,b2);box.append(div)})}
+    const tg=document.createElement("span");if(s){tg.className="tag "+s.type;tg.textContent=s.type==="annule"?"Annulé":"Remplacé"}
+    const sm=document.createElement("small");
+    sm.textContent=`${h.ref}${h.d.twimm?" · twimm "+h.d.twimm:""} · ${h.at?new Date(h.at).toLocaleString("fr-FR"):""}${h.by?" · "+h.by:""}`
+      +(s?(s.type==="annule"?` · annulé le ${s.at?new Date(s.at).toLocaleDateString("fr-FR"):"?"}${s.by?" par "+s.by:""} : ${s.motif}`:` · remplacé par ${s.via}`):"");
+    l.append(b," ",tg,sm);
+    const bt=document.createElement("div");bt.className="bt";
+    const mk=(t,f)=>{const x=document.createElement("button");x.textContent=t;x.onclick=()=>f(x);bt.append(x);return x};
+    mk("Rouvrir",()=>{REP.key="";repBanner();reopen(h)});
+    mk("PDF",async x=>{x.disabled=true;try{save(refOf(h.d)+".pdf",await makePdf(h.d))}catch(e){alert("Erreur PDF : "+e.message)}x.disabled=false});
+    if(!s){mk("Remplacer",()=>{REP.key=h.ref;reopen(h);repBanner()});mk("Annuler",()=>annuler(h))}
+    div.append(l,bt);box.append(div)})}
 
 // ---------- génération ----------
 $("gen").onclick=async()=>{const m=$("msg"),d=form(),err=t=>{m.className="msg err";m.textContent=t};
@@ -112,10 +128,13 @@ $("gen").onclick=async()=>{const m=$("msg"),d=form(),err=t=>{m.className="msg er
   if(!d.ville)return err("Indiquez la ville.");
   if(d.num.length!==10&&!confirm(`Le module ${d.num} n’a pas 10 chiffres. Continuer ?`))return;
   if(!SITES[d.siteCode]&&!learned(d.siteCode).length&&!confirm(`Le site ${d.siteCode} n’est pas dans vos listes. Continuer ?`))return;
-  const ref=refOf(d);if(hist.some(h=>h.ref===ref)&&!confirm(`Un certificat ${ref} existe déjà. Le générer à nouveau ?`))return;
+  const ref=refOf(d),act=SUI.active(hist);
+  let rep=REP.key?act.find(h=>h.ref===REP.key):null;
+  if(!rep){rep=act.find(h=>refOf(h.d)===ref)||null;
+    if(rep&&!confirm(`Un certificat ${ref} existe déjà. Le remplacer par celui-ci ? (l’ancien sera noté « remplacé » dans l’historique)`))return}
   $("gen").disabled=true;m.className="msg";m.textContent="Génération…";
   try{const blob=await makePdf(d);save(ref+".pdf",blob);
-    const by=normName($("by").value);$("by").value=by;ls.s("by",by);const st=await add({ref,at:new Date().toISOString(),by,d});
+    const by=normName($("by").value);$("by").value=by;ls.s("by",by);const st=await add({ref:SUI.freeKey(hist,ref),at:new Date().toISOString(),by,d:rep?{...d,remplace:rep.ref}:d});REP.key="";repBanner();todoBadge();
     m.className="msg ok";m.textContent=`PDF généré : ${ref}.pdf`+(st==="pending"?" (historique partagé injoignable : sera renvoyé plus tard)":"")}
   catch(e){err("Erreur : "+e.message)}$("gen").disabled=false};
 

@@ -54,3 +54,9 @@ Pour adapter la lecture : ajouter un export récent **anonymisé** dans `test/`,
 
 Onglet **Import** : chargez l'export twimm (`.csv`). Chaque logement est classé *Prêt*, *À vérifier* ou *Déjà généré*, avec le motif.
 Rien n'est ignoré silencieusement : les cas douteux (plusieurs logements, bilan avec infestation ou « déjà fait », numéro de module mal saisi, adresse ou étage incohérents) restent visibles et modifiables.
+
+## Suivi : annuler / remplacer, certificats oubliés, envois par site
+
+- **Annuler / Remplacer** (onglet Historique) : l'historique partagé ne perd jamais de ligne. Une annulation ajoute une ligne `<réf>~ANNUL` (motif obligatoire) ; un remplacement ajoute un certificat portant `remplace=<réf remplacée>`, sous la clé `<réf>~R2`, `~R3`… si la référence existe déjà. Aucun changement du script Google n'est nécessaire.
+- **À faire** : chaque import twimm mémorise (sur l'appareil) les logements sans certificat. La liste se vide toute seule quand le certificat est généré, et un certificat annulé y revient. « Les traiter dans Import » reprend la liste dans l'écran de génération en lot.
+- **Envois** : certificats en vigueur regroupés par site (période au choix), ZIP par site ou global, liste à copier. Le suivi « envoyé » reste sur l'appareil.

@@ -26,4 +26,6 @@ export const row=(o={})=>({
   "Bilan":"Par Jean Test le 10/10/2026 : Visite de relocation effectuée RAS","Statut":"Vérifié","Passages réalisés":"Jean Test","Début passages réalisés":"10/10/2026 09:00:00","Fin passages réalisés":"10/10/2026 09:40:00",...o});
 // CSV au format twimm : séparateur ;, CRLF, champs entre guillemets avec retours à la ligne, encodage Windows-1252
 export const toCsv=rows=>Buffer.from(HEAD.map(cell).join(";")+"\r\n"+rows.map(r=>HEAD.map(h=>cell(r[h])).join(";")).join("\r\n")+"\r\n","latin1");
-export const analyse=(rows,hist=[])=>IMP.analyseAll(IMP.parseCSV(IMP.decode(toCsv(rows))),hist);
+export const analyse=(rows,hist=[],gone)=>IMP.analyseAll(IMP.parseCSV(IMP.decode(toCsv(rows))),hist,gone);
+const ssrc=fs.readFileSync(path.join(root,"src/js/12-suivi.js"),"utf8");
+export const SUI=new Function("refOf",ssrc+";return SUI;")(refOf);

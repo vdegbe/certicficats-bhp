@@ -18,7 +18,9 @@
  <div class="grp">Certificats</div>
  <button id="t1" class="on">Nouveau</button>
  <button id="t4">Import</button>
+ <button id="t7">À faire</button>
  <button id="t2">Historique</button>
+ <button id="t8">Envois</button>
  <div class="grp">Documents</div>
  <button id="t5">Devis</button>
  <button id="t6">Listing gel</button>
@@ -44,6 +46,7 @@
    <div class="full"><label>Établi par (prénom, pour l’historique)</label><input id="by" list="names" autocomplete="off"></div>
   </div>
   <div class="ref" id="ref">—</div>
+  <div class="repb hide" id="repb"><span id="rept"></span> <button id="repx">Annuler le remplacement</button></div>
   <button class="pri" id="gen" style="width:100%">Générer le PDF</button>
   <div class="msg" id="msg"></div>
  </div>
@@ -83,6 +86,7 @@
 </section>
 
 <section id="p2" class="hide"><div class="card">
+ <select id="hf" style="margin-bottom:8px"><option value="act">Certificats en vigueur</option><option value="all">Tous (avec annulés et remplacés)</option></select>
  <input id="q" placeholder="Rechercher (référence, n° twimm, site, adresse…)" style="margin-bottom:8px">
  <div class="msg" id="hmsg"></div><div id="hist"></div></div></section>
 
@@ -101,6 +105,24 @@
  <div class="msg" id="bmsg"></div>
  <label style="margin-top:10px">Script à coller dans Google Apps Script</label><pre id="scr"></pre>
 </div></section>
+
+<section id="p7" class="hide"><div class="card">
+ <b>Certificats à faire</b>
+ <div class="msg" id="tsum"></div><div class="msg" id="tinfo"></div>
+ <div class="tools"><button class="pri" id="tgo" disabled>Les traiter dans Import</button><button id="tclr" disabled>Vider la liste</button></div>
+ <div id="tlist"></div></div></section>
+
+<section id="p8" class="hide"><div class="card">
+ <b>Préparer les envois</b>
+ <div class="grid" style="margin-top:8px">
+  <div><label>Certificats signés</label><select id="sp" style="width:100%"><option value="today">Aujourd’hui</option><option value="6" selected>7 derniers jours</option><option value="29">30 derniers jours</option><option value="all">Tous</option></select></div>
+  <div><label>&nbsp;</label><label style="font-size:13px;color:var(--tx)"><input type="checkbox" id="snew" checked> Seulement les non envoyés</label></div>
+ </div>
+ <div class="msg" id="ssum"></div>
+ <div class="tools"><button class="pri" id="szall" disabled>ZIP de tout (un dossier par site)</button><button id="sfall" disabled>Tout marquer envoyé</button></div>
+ <div class="msg" id="smsg">Le suivi « envoyé » est gardé sur cet appareil seulement.</div>
+</div>
+<div id="slist"></div></section>
 
 <section id="p5" class="hide"><div class="card"><b>Devis</b>
  <div class="msg">Cette section est en préparation : son contenu sera défini ensuite.</div></div></section>
