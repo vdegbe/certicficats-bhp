@@ -9,6 +9,6 @@ async function drawPreview(){
   try{const blob=await makePdf(d);if(n!==PV.n)return;
     const old=PV.url;PV.url=URL.createObjectURL(blob);$("pv").src=PV.url+"#toolbar=0&navpanes=0&view=Fit";
     if(old)setTimeout(()=>URL.revokeObjectURL(old),5000);
-    m.className="msg";m.textContent=(d.etage&&d.porte?"":"Étage et porte à renseigner avant de générer. ")+"L’aperçu suit vos modifications."}
+    m.className="msg";m.textContent=(d.etage||d.porte?"":"Sans étage ni porte, le certificat est établi sans ces deux lignes. ")+"L’aperçu suit vos modifications."}
   catch(e){if(n===PV.n){$("pv").removeAttribute("src");m.className="msg err";m.textContent="Aperçu impossible : "+e.message}}}
 window.matchMedia("(min-width:1180px)").addEventListener("change",schedPreview);

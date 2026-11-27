@@ -107,7 +107,6 @@ $("gen").onclick=async()=>{const m=$("msg"),d=form(),err=t=>{m.className="msg er
   if(!d.dAudit)return err("Indiquez la date de l’audit.");
   if(d.dAudit>d.dSign)return err("La date d’audit ne peut pas être après aujourd’hui.");
   if(!d.siteNom)return err("Indiquez le nom du site.");
-  if(!d.etage||!d.porte)return err("Indiquez l’étage et la porte.");
   if(!d.adresse)return err("Indiquez l’adresse.");
   if(!/^\d{5}$/.test(d.cp))return err("Le code postal doit avoir 5 chiffres.");
   if(!d.ville)return err("Indiquez la ville.");
