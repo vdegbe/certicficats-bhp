@@ -87,9 +87,9 @@ $("csvf").onchange=async ev=>{
     const cc=BAK.checkColumns(rows);
     if(!rows.length||cc.blocking.length)throw new Error(rows.length?`ce fichier ne ressemble pas à un export twimm : colonne(s) introuvable(s) : ${cc.blocking.map(m=>"« "+m.label+" »").join(", ")}. Colonnes lues : ${cc.keys.slice(0,12).join(", ")||"aucune"}.`:"le fichier est vide.");
     await load();
-    IM.cands=IMP.analyseAll(rows,hist);IM.out=[];$("iout").classList.add("hide");
+    IM.cands=IMP.analyseAll(rows,SUI.active(hist),SUI.gone(hist));todoSave(IM.cands);IM.out=[];$("iout").classList.add("hide");
     const warn=cc.partial.map(m=>`colonne « ${m.label} » absente : ${m.effect}`),sus=BAK.suspicion(IM.cands);if(sus)warn.push(sus);
-    $("ires").classList.remove("hide");imsg(`${f.name} : ${rows.length} ligne(s) lue(s).`+(warn.length?" ⚠ "+warn.join(" ⚠ "):""),warn.length?"err":"ok");irender()}
+    $("ires").classList.remove("hide");imsg(`${f.name} : ${rows.length} ligne(s) lue(s).`+(warn.length?" ⚠ "+warn.join(" ⚠ "):""),warn.length?"err":"ok");irender();todoBadge()}
   catch(e){imsg("Erreur : "+e.message,"err")}};
 $("iq").oninput=irender;$("ifl").onchange=irender;
 $("iby").value=ls.g("by")||"";
@@ -113,11 +113,11 @@ $("igen").onclick=async()=>{
   for(let i=0;i<sel.length;i++){const c=sel[i];imsg(`Génération ${i+1}/${sel.length} (twimm ${c.twimm})…`);
     try{const d={...c.d,dSign:iso(new Date())},ref=refOf(d),blob=await makePdf(d);
       IM.out.push({c,d,ref,blob});
-      const st=await add({ref,at:new Date().toISOString(),by,d});if(st==="pending")pending++;else if(st==="shared")shared++;
+      const act=SUI.active(hist).find(h=>refOf(h.d)===ref),st=await add({ref:SUI.freeKey(hist,ref),at:new Date().toISOString(),by,d:act?{...d,remplace:act.ref}:d});if(st==="pending")pending++;else if(st==="shared")shared++;
       c.status="done";c.sel=false;c.reasons=["généré à l'instant"]}
     catch(e){fails.push(`twimm ${c.twimm} : ${e.message}`)}}
   imsg(`${IM.out.length} certificat(s) généré(s)`+(fails.length?` — ${fails.length} échec(s) : ${fails.slice(0,3).join(" | ")}`:"")+(pending?` (${pending} en attente d'envoi à l'historique partagé)`:""),fails.length?"err":"ok");
-  irender();showOut()};
+  irender();showOut();todoBadge()};
 
 function showOut(){
   const box=$("iolist");box.innerHTML="";

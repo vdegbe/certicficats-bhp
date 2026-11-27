@@ -197,9 +197,9 @@ function analyse(r){
     out.push({d,reasons:[...new Set(rs)],infos:k===0?infos.slice():infos.slice(),multi,twimm,main:m===z})});
   return out}
 
-function analyseAll(rows,hist){
+function analyseAll(rows,hist,gone){
   extraSites=new Set(rows.map(r=>pad4((r.codesite||"").split("_")[0])).filter(c=>c!=="0000"));
-  const refs=new Map();(hist||[]).forEach(h=>refs.set(h.ref,h));
+  const refs=new Map();(hist||[]).forEach(h=>refs.set(h.d&&h.d.num?refOf(h.d):h.ref,h));
   const seen=new Map();const cands=[];
   rows.forEach((r,ri)=>{
     if(!(r.ntwimm||"").trim())return;
@@ -208,7 +208,8 @@ function analyseAll(rows,hist){
       c.line=ri+2;c.status=c.reasons.length?"check":"ready";c.sel=c.status==="ready";
       if(c.ref&&refs.has(c.ref)){c.status="done";c.sel=false;c.reasons.unshift("déjà dans l'historique")}
       else if(c.ref&&seen.has(c.ref)){c.status="done";c.sel=false;c.reasons.unshift("même certificat que l'intervention "+seen.get(c.ref))}
-      else if(c.ref)seen.set(c.ref,c.twimm);
+      else if(c.ref){seen.set(c.ref,c.twimm);
+        if(gone&&gone.has(c.ref)){c.status="check";c.sel=false;c.reasons.unshift("certificat annulé auparavant")}}
       cands.push(c)})});
   return cands}
 

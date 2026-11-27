@@ -47,3 +47,10 @@ input[type=checkbox]{width:18px;height:18px;min-width:18px;min-height:0;padding:
  .cols{display:grid;grid-template-columns:minmax(380px,520px) 1fr;gap:16px;align-items:start}
  .prevcard{display:block;position:sticky;top:20px}
  #pv{display:block;width:100%;aspect-ratio:338.667/190.5;border:1px solid var(--bd);border-radius:8px;background:#fff;margin-top:8px}}
+
+/* suivi : annulations, à faire, envois */
+.hist .bt{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.hist .bt button{padding:5px 10px;font-size:13px}
+.hist.off{opacity:.65}.hist.off b{text-decoration:line-through}
+.tag.annule,.tag.remplace{color:var(--red);border-color:var(--red)}
+.repb{background:var(--bg);border:1px solid var(--warn);border-radius:8px;padding:8px;margin:10px 0;font-size:13px}.repb button{margin-top:6px;padding:5px 10px;font-size:13px}
+.srow{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--tx);padding:6px 0;border-top:1px solid var(--bd);margin:0}.srow span{min-width:0;word-break:break-word}
