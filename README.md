@@ -63,5 +63,9 @@ Rien n'est ignoré silencieusement : les cas douteux (plusieurs logements, bilan
 
 ## Mail Outlook et certificats « à vérifier »
 
-- Boutons **Mail** (Nouveau, Import, Historique, Envois par site) : téléchargent un brouillon `.eml` (texte prêt, PDF joint). Double-clic : Outlook l'ouvre comme un message à envoyer ; il reste à saisir le destinataire. Un lien `mailto:` ne pourrait pas joindre le PDF.
+- Boutons **Mail** (Nouveau, Import, Historique, Envois par site) : téléchargent un brouillon `.eml` (texte prêt, PDF joint, sans signature). Double-clic : Outlook l'ouvre comme un message à envoyer ; il reste à saisir le destinataire. Un lien `mailto:` ne pourrait pas joindre le PDF.
 - Import : un logement « à vérifier » sans erreur bloquante se passe en « Prêt » avec **Marquer prêt** ; après **Modifier → Appliquer**, il passe automatiquement en « Prêt » si tout est correct.
+
+## Signature des mails
+
+Le site n'ajoute **aucune** signature : chacun l'insère dans Outlook (Message → Signature). Le brouillon `.eml` est en **HTML** (et non en texte simple) pour qu'Outlook garde le logo de la signature ; en texte simple, Outlook supprime les images.
