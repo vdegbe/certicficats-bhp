@@ -91,6 +91,7 @@ async function load_(){
   catch(e){hist=(ls.g("hist")||[]).concat(pend);$("hmsg").textContent="Service partagé injoignable : historique local affiché."}}
 async function add(r){hist.push(r);const l=(ls.g("hist")||[]);l.push(r);ls.s("hist",l.slice(-500));
   if(!BK)return"local";try{await post(r);return"shared"}catch(e){const p=ls.g("pend")||[];p.push(r);ls.s("pend",p);return"pending"}}
+const LAST={d:null,blob:null};
 const REP={key:""}; // certificat en cours de remplacement (choisi dans l'historique)
 function repBanner(){const b=$("repb");if(!REP.key){b.classList.add("hide");return}b.classList.remove("hide");$("rept").textContent=`Vous remplacez le certificat ${REP.key}. Corrigez les champs puis générez : l’ancien sera noté « remplacé » dans l’historique.`}
 function reopen(h){F.forEach(f=>$(f).value=h.d[f]||"");curCode=h.d.siteCode;detect();tab(1)}
@@ -113,6 +114,7 @@ function renderHist(){const box=$("hist"),q=U($("q").value),all=$("hf").value===
     const bt=document.createElement("div");bt.className="bt";
     const mk=(t,f)=>{const x=document.createElement("button");x.textContent=t;x.onclick=()=>f(x);bt.append(x);return x};
     mk("Rouvrir",()=>{REP.key="";repBanner();reopen(h)});
+    mk("Mail",async x=>{x.disabled=true;try{await mailFor([{d:h.d,blob:await makePdf(h.d)}])}catch(e){alert("Erreur : "+e.message)}x.disabled=false});
     mk("PDF",async x=>{x.disabled=true;try{save(refOf(h.d)+".pdf",await makePdf(h.d))}catch(e){alert("Erreur PDF : "+e.message)}x.disabled=false});
     if(!s){mk("Remplacer",()=>{REP.key=h.ref;reopen(h);repBanner()});mk("Annuler",()=>annuler(h))}
     div.append(l,bt);box.append(div)})}
@@ -133,7 +135,7 @@ $("gen").onclick=async()=>{const m=$("msg"),d=form(),err=t=>{m.className="msg er
   if(!rep){rep=act.find(h=>refOf(h.d)===ref)||null;
     if(rep&&!confirm(`Un certificat ${ref} existe déjà. Le remplacer par celui-ci ? (l’ancien sera noté « remplacé » dans l’historique)`))return}
   $("gen").disabled=true;m.className="msg";m.textContent="Génération…";
-  try{const blob=await makePdf(d);save(ref+".pdf",blob);
+  try{const blob=await makePdf(d);save(ref+".pdf",blob);LAST.d=d;LAST.blob=blob;$("mailb").textContent="Préparer le mail Outlook pour "+ref;$("mailb").classList.remove("hide");
     const by=normName($("by").value);$("by").value=by;ls.s("by",by);const st=await add({ref:SUI.freeKey(hist,ref),at:new Date().toISOString(),by,d:rep?{...d,remplace:rep.ref}:d});REP.key="";repBanner();todoBadge();
     m.className="msg ok";m.textContent=`PDF généré : ${ref}.pdf`+(st==="pending"?" (historique partagé injoignable : sera renvoyé plus tard)":"")}
   catch(e){err("Erreur : "+e.message)}$("gen").disabled=false};

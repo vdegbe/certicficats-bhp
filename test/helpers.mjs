@@ -29,3 +29,5 @@ export const toCsv=rows=>Buffer.from(HEAD.map(cell).join(";")+"\r\n"+rows.map(r=
 export const analyse=(rows,hist=[],gone)=>IMP.analyseAll(IMP.parseCSV(IMP.decode(toCsv(rows))),hist,gone);
 const ssrc=fs.readFileSync(path.join(root,"src/js/12-suivi.js"),"utf8");
 export const SUI=new Function("refOf",ssrc+";return SUI;")(refOf);
+const msrc=fs.readFileSync(path.join(root,"src/js/13-mail.js"),"utf8");
+export const MAIL=new Function(msrc+";return MAIL;")();

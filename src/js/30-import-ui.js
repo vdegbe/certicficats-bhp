@@ -50,6 +50,7 @@ function irender(){
   show.slice(0,400).forEach(c=>box.append(irow(c)));
   if(show.length>400){const p=document.createElement("div");p.className="msg";p.textContent=`${show.length-400} autres lignes : affinez la recherche.`;box.append(p)}}
 
+function markReady(c,why){c.status="ready";c.sel=true;c.reasons=[];c.infos=[why].concat(c.infos.filter(x=>x!==why))}
 function irow(c){
   const div=document.createElement("div");div.className="irow "+c.status;
   const head=document.createElement("div");head.className="ihead";
@@ -67,15 +68,23 @@ function irow(c){
   const bp=document.createElement("button");bp.textContent="PDF";
   bp.onclick=async()=>{const e=hard(c);if(e.length){imsg(`twimm ${c.twimm} : ${e.join(", ")}`,"err");return}
     bp.disabled=true;try{const d={...c.d,dSign:iso(new Date())};save(refOf(d)+".pdf",await makePdf(d))}catch(x){imsg("Erreur : "+x.message,"err")}bp.disabled=false};
-  bar.append(be,bp);div.append(bar);
+  bar.append(be,bp);
+  if(c.status==="check"){const br=document.createElement("button");br.textContent="Marquer prêt";
+    br.onclick=()=>{const e=hard(c);if(e.length){imsg(`twimm ${c.twimm} : impossible, il reste à corriger — ${e.join(", ")}`,"err");return}
+      markReady(c,"vérifié à la main");todoReplace(SUI.todoKey(c),c);irender()};bar.append(br)}
+  div.append(bar);
   const ed=document.createElement("div");ed.className="grid hide";ed.style.marginTop="8px";
   const fields=[["num","N° de module"],["dAudit","Date de l'audit","date"],["siteNom","Site (nom)",0,1],["etage","Étage"],["porte","Porte"],["adresse","Adresse",0,1],["cp","Code postal"],["ville","Ville"]];
   const ins={};
   fields.forEach(([k,l,ty,full])=>{const w=document.createElement("div");if(full)w.className="full";const lb=document.createElement("label");lb.textContent=l;
     const i=document.createElement("input");if(ty)i.type=ty;i.value=c.d[k]||"";ins[k]=i;w.append(lb,i);ed.append(w)});
   const ok=document.createElement("button");ok.className="pri full";ok.textContent="Appliquer";
-  ok.onclick=()=>{fields.forEach(([k])=>c.d[k]=ins[k].value.trim());c.d.siteCode=c.d.num.slice(0,4);
-    c.ref=c.d.num&&c.d.dAudit?refOf(c.d):"";c.infos=[];if(!c.d.etage&&!c.d.porte)c.infos.push("sans étage ni porte");irender()};
+  ok.onclick=()=>{const oldK=SUI.todoKey(c);fields.forEach(([k])=>c.d[k]=ins[k].value.trim());c.d.siteCode=c.d.num.slice(0,4);
+    c.ref=c.d.num&&c.d.dAudit?refOf(c.d):"";c.infos=[];if(!c.d.etage&&!c.d.porte)c.infos.push("sans étage ni porte");
+    const e=hard(c);
+    if(!e.length&&c.status!=="done"){markReady(c,"corrigé à la main")}
+    else if(e.length)imsg(`twimm ${c.twimm} : encore à corriger — ${e.join(", ")}`,"err");
+    todoReplace(oldK,c);irender()};
   ed.append(ok);div.append(ed);
   be.onclick=()=>ed.classList.toggle("hide");
   return div}
@@ -127,7 +136,8 @@ function showOut(){
     const b=document.createElement("b");b.textContent=`twimm ${o.c.twimm} · module ${o.c.d.num}`;
     const s=document.createElement("small");s.textContent=o.ref+".pdf";l.append(b,s);
     const bt=document.createElement("button");bt.textContent="PDF";bt.onclick=()=>save(o.ref+".pdf",o.blob);
-    div.append(l,bt);box.append(div)})}
+    const bm=document.createElement("button");bm.textContent="Mail";bm.onclick=()=>mailFor([o]).catch(e=>imsg("Erreur : "+e.message,"err"));
+    div.append(l,bt,bm);box.append(div)})}
 
 $("izip").onclick=async()=>{
   if(!IM.out.length)return;const b=$("izip");b.disabled=true;

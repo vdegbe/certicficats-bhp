@@ -55,7 +55,9 @@ function renderSend(){
     const z=document.createElement("button");z.className="pri";z.textContent="ZIP du site";z.onclick=()=>sendZip([g],z,false);
     const c=document.createElement("button");c.textContent="Copier la liste";c.onclick=()=>copyList(g);
     const m=document.createElement("button");m.textContent="Marquer envoyé";m.onclick=()=>{const s=sentMap();g.items.forEach(x=>s[x.ref]=todayIso());ls.s("sent",s);renderSend()};
-    tools.append(z,c,m);card.append(tools);
+    const ml=document.createElement("button");ml.textContent="Mail Outlook";ml.onclick=async()=>{ml.disabled=true;
+      try{const it=[];for(const x of g.items)it.push({d:x.d,blob:await makePdf(x.d)});await mailFor(it)}catch(e){$("smsg").className="msg err";$("smsg").textContent="Erreur : "+e.message}ml.disabled=false};
+    tools.append(z,ml,c,m);card.append(tools);
     g.items.forEach(x=>{const row=document.createElement("label");row.className="srow";
       const cb=document.createElement("input");cb.type="checkbox";cb.checked=!!sent[x.ref];
       cb.onchange=()=>{const s=sentMap();if(cb.checked)s[x.ref]=todayIso();else delete s[x.ref];ls.s("sent",s);renderSend()};
@@ -84,3 +86,13 @@ $("sfall").onclick=()=>{const s=sentMap();sendItems().forEach(x=>s[x.ref]=todayI
 $("hf").onchange=renderHist;
 $("repx").onclick=()=>{REP.key="";repBanner()};
 load().then(todoBadge);
+
+// ---- mail Outlook : brouillon .eml avec les PDF joints ----
+async function mailFor(items){ // items : [{d, blob}]
+  const files=[];for(const o of items)files.push({name:refOf(o.d)+".pdf",bytes:new Uint8Array(await o.blob.arrayBuffer())});
+  const d0=items[0].d,subject=items.length>1?`Certificats de non-infestation – site ${d0.siteCode} ${U(d0.siteNom)}`:`Certificat de non-infestation – ${U(d0.adresse)}${d0.etage?" ETG "+d0.etage:""}${d0.porte?" PORTE "+d0.porte:""}`;
+  save(`mail_${items.length>1?"site"+d0.siteCode:refOf(d0)}.eml`,new Blob([MAIL.eml({subject,files})],{type:"message/rfc822"}))}
+$("mailb").onclick=async()=>{if(LAST.d)try{await mailFor([LAST])}catch(e){$("msg").className="msg err";$("msg").textContent="Erreur : "+e.message}};
+// un certificat corrigé à la main change de clé dans la liste « À faire » : on remplace l'ancienne entrée
+function todoReplace(oldK,c){const l=(ls.g("todo")||[]).filter(e=>(e.k||SUI.todoKey(e))!==oldK);ls.s("todo",l);
+  if(c.status!=="done")todoSave([c]);todoBadge()}
