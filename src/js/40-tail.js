@@ -25,7 +25,7 @@ $("bkSave").onclick=async()=>{BK=$("bk").value.trim();ls.s("bk",BK);const m=$("b
   await load();m.className=$("hmsg").textContent.startsWith("Historique partagé")?"msg ok":"msg err";m.textContent=$("hmsg").textContent};
 
 // ---------- onglets / init ----------
-function tab(n){document.body.dataset.tab=n;if(n===1)schedPreview();[1,2,3,4,5,6,7,8].forEach(i=>{$("p"+i).classList.toggle("hide",i!==n);$("t"+i).classList.toggle("on",i===n)});if(n===2){load().then(()=>{renderHist();const a=bkAge();if(a==null||a>30)$("hmsg").textContent+=" · Sauvegarde conseillée (onglet Réglages)"})}if(n===3)bkInfo();if(n===7)load().then(renderTodo);if(n===8)load().then(renderSend)}
+function tab(n){document.body.dataset.tab=n;if(n===1)schedPreview();[1,2,3,4,5,6,7,8].forEach(i=>{$("p"+i).classList.toggle("hide",i!==n);$("t"+i).classList.toggle("on",i===n)});if(n===2){load().then(()=>{renderHist();const a=bkAge();if(a==null||a>30)$("hmsg").textContent+=" · Sauvegarde conseillée (onglet Réglages)"})}if(n===3){bkInfo();devInfo()}if(n===7)load().then(renderTodo);if(n===8)load().then(renderSend)}
 [1,2,3,4,5,6,7,8].forEach(i=>$("t"+i).onclick=()=>tab(i));
 $("q").oninput=renderHist;
 $("num").addEventListener("input",detect);

@@ -96,3 +96,17 @@ $("mailb").onclick=async()=>{if(LAST.d)try{await mailFor([LAST])}catch(e){$("msg
 // un certificat corrigé à la main change de clé dans la liste « À faire » : on remplace l'ancienne entrée
 function todoReplace(oldK,c){const l=(ls.g("todo")||[]).filter(e=>(e.k||SUI.todoKey(e))!==oldK);ls.s("todo",l);
   if(c.status!=="done")todoSave([c]);todoBadge()}
+
+// ---- effacer les données de cet appareil (poste partagé) : seulement NOS clés, jamais localStorage.clear() ----
+// (le site d'un autre projet peut partager la même adresse : on ne touche pas à ses données)
+const OWN_KEYS=["hist","pend","bk","by","bkAt","todo","todoAt","ign","sent"];
+function devInfo(){const h=(ls.g("hist")||[]).length,p=(ls.g("pend")||[]).length,t=(ls.g("todo")||[]).length;
+  $("devInfo").textContent=`Gardé sur cet appareil : copie de l’historique (${h} ligne(s)), ${p} certificat(s) en attente d’envoi, liste « À faire » (${t}), suivi des envois, votre prénom, votre session.`}
+$("devClr").onclick=()=>{
+  const p=(ls.g("pend")||[]).length;
+  if(!confirm("Effacer toutes les données de cet appareil et vous déconnecter ?\n\nL’historique partagé (Google Sheet) n’est pas touché."))return;
+  if(!BK&&!confirm("ATTENTION : aucun historique partagé n’est configuré. L’historique de cet appareil est le seul exemplaire : il sera perdu.\n\nExportez-le d’abord (Sauvegarde de l’historique ci-dessus). Effacer quand même ?"))return;
+  if(p&&!confirm(`ATTENTION : ${p} certificat(s) n’ont pas encore été envoyés à l’historique partagé et seront perdus.\n\nAnnulez, ouvrez l’onglet Historique pour relancer l’envoi, ou exportez l’historique. Effacer quand même ?`))return;
+  OWN_KEYS.forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});
+  ["k","ck"].forEach(k=>{try{sessionStorage.removeItem(k)}catch(e){}});
+  location.reload()};
