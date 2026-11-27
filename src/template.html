@@ -12,9 +12,20 @@
 </head>
 <body>
 <datalist id="names"></datalist>
+<div class="app">
+<nav class="side" aria-label="Navigation">
+ <h1>Certificat de Non-Infestation</h1>
+ <div class="grp">Certificats</div>
+ <button id="t1" class="on">Nouveau</button>
+ <button id="t4">Import</button>
+ <button id="t2">Historique</button>
+ <div class="grp">Documents</div>
+ <button id="t5">Devis</button>
+ <button id="t6">Listing gel</button>
+ <div class="sp"></div>
+ <button id="t3">Réglages</button>
+</nav>
 <main>
-<h1>Certificat de Non-Infestation</h1>
-<div class="tabs"><button id="t1" class="on">Nouveau</button><button id="t4">Import</button><button id="t2">Historique</button><button id="t3">Réglages</button></div>
 
 <section id="p1">
  <div class="card">
@@ -83,7 +94,14 @@
  <div class="msg" id="bmsg"></div>
  <label style="margin-top:10px">Script à coller dans Google Apps Script</label><pre id="scr"></pre>
 </div></section>
+
+<section id="p5" class="hide"><div class="card"><b>Devis</b>
+ <div class="msg">Cette section est en préparation : son contenu sera défini ensuite.</div></div></section>
+
+<section id="p6" class="hide"><div class="card"><b>Listing gel</b>
+ <div class="msg">Cette section est en préparation : son contenu sera défini ensuite.</div></div></section>
 </main>
+</div>
 
 <script>/*@JSPDF@*/</script>
 <script>/*@DATA@*/</script>
