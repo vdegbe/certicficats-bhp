@@ -91,8 +91,25 @@ load().then(todoBadge);
 async function mailFor(items){ // items : [{d, blob}]
   const files=[];for(const o of items)files.push({name:refOf(o.d)+".pdf",bytes:new Uint8Array(await o.blob.arrayBuffer())});
   const d0=items[0].d,subject=items.length>1?`Certificats de non-infestation – site ${d0.siteCode} ${U(d0.siteNom)}`:`Certificat de non-infestation – ${U(d0.adresse)}${d0.etage?" ETG "+d0.etage:""}${d0.porte?" PORTE "+d0.porte:""}`;
-  save(`mail_${items.length>1?"site"+d0.siteCode:refOf(d0)}.eml`,new Blob([MAIL.eml({subject,files})],{type:"message/rfc822"}))}
+  save(`mail_${items.length>1?"site"+d0.siteCode:refOf(d0)}.eml`,new Blob([MAIL.eml({subject,files,sig:sigGet()})],{type:"message/rfc822"}))}
 $("mailb").onclick=async()=>{if(LAST.d)try{await mailFor([LAST])}catch(e){$("msg").className="msg err";$("msg").textContent="Erreur : "+e.message}};
 // un certificat corrigé à la main change de clé dans la liste « À faire » : on remplace l'ancienne entrée
 function todoReplace(oldK,c){const l=(ls.g("todo")||[]).filter(e=>(e.k||SUI.todoKey(e))!==oldK);ls.s("todo",l);
   if(c.status!=="done")todoSave([c]);todoBadge()}
+
+// ---- ma signature (propre à chaque appareil) : texte + logo, ajoutés à chaque brouillon de mail ----
+function sigGet(){const s=ls.g("sig");if(!s||(!s.text&&!s.img))return null;
+  const o={text:(s.text||"").trim()};
+  if(s.img){const m=/^data:([^;]+);base64,(.+)$/.exec(s.img);if(m)o.img={type:m[1],bytes:Uint8Array.from(atob(m[2]),c=>c.charCodeAt(0))}}
+  return o}
+function sigShow(){const s=ls.g("sig")||{};$("sigt").value=s.text||"";const im=$("sigp");
+  if(s.img){im.src=s.img;im.classList.remove("hide");$("sigx").classList.remove("hide")}else{im.removeAttribute("src");im.classList.add("hide");$("sigx").classList.add("hide")}}
+$("sigi").onchange=ev=>{const f=ev.target.files[0],m=$("sigm");if(!f)return;
+  const im=new Image(),u=URL.createObjectURL(f);
+  im.onload=()=>{const k=Math.min(1,300/im.width,150/im.height),c=document.createElement("canvas");c.width=Math.max(1,Math.round(im.width*k));c.height=Math.max(1,Math.round(im.height*k));
+    c.getContext("2d").drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);
+    const s=ls.g("sig")||{};s.img=c.toDataURL("image/png");ls.s("sig",s);sigShow();m.className="msg ok";m.textContent="Logo enregistré sur cet appareil."};
+  im.onerror=()=>{URL.revokeObjectURL(u);m.className="msg err";m.textContent="Image illisible : choisissez un fichier PNG ou JPG."};im.src=u;ev.target.value=""};
+$("sigx").onclick=()=>{const s=ls.g("sig")||{};delete s.img;ls.s("sig",s);sigShow()};
+$("sigs").onclick=()=>{const s=ls.g("sig")||{};s.text=$("sigt").value.trim();ls.s("sig",s);const m=$("sigm");m.className="msg ok";m.textContent="Signature enregistrée sur cet appareil. Elle sera ajoutée aux prochains brouillons de mail."};
+sigShow();
