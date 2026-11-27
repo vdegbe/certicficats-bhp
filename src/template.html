@@ -10,7 +10,7 @@
 /*@CSS@*/
 </style>
 </head>
-<body>
+<body data-tab="1">
 <datalist id="names"></datalist>
 <div class="app">
 <nav class="side" aria-label="Navigation">
@@ -28,6 +28,7 @@
 <main>
 
 <section id="p1">
+<div class="cols">
  <div class="card">
   <div class="grid">
    <div class="full"><label>N° de module (10 chiffres, ex. 1129040088)</label><input id="num" inputmode="numeric" maxlength="10" autocomplete="off"><div class="det" id="det"></div></div>
@@ -46,6 +47,12 @@
   <button class="pri" id="gen" style="width:100%">Générer le PDF</button>
   <div class="msg" id="msg"></div>
  </div>
+ <div class="card prevcard">
+  <b>Aperçu du certificat</b>
+  <iframe id="pv" title="Aperçu du certificat"></iframe>
+  <div class="msg" id="pvm"></div>
+ </div>
+</div>
 </section>
 
 <section id="p4" class="hide">

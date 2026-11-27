@@ -30,7 +30,7 @@ function renderChips(){const box=$("chips");box.innerHTML="";
     b.textContent=`${c.used?"★ ":""}${c.nom} · ${c.adr||"(adresse non renseignée)"}, ${c.cp} ${c.ville}`;b.onclick=()=>pick(i);box.append(b)})}
 function pick(i){const c=cands[i];$("siteNom").value=c.nom;$("adresse").value=c.adr;$("cp").value=c.cp;$("ville").value=c.ville;
   document.querySelectorAll(".chip").forEach(b=>b.classList.toggle("sel",+b.dataset.i===i));upd()}
-function upd(){const d=form();$("ref").textContent=d.num&&d.dAudit?refOf(d):"—"}
+function upd(){const d=form();$("ref").textContent=d.num&&d.dAudit?refOf(d):"—";schedPreview()}
 
 // ---------- rendu du certificat (même mise en page que le modèle PowerPoint) ----------
 // PDF vectoriel : le texte est du vrai texte (sélectionnable, léger) ; seul le fond est une image.
